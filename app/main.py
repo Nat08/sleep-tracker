@@ -1,12 +1,10 @@
 from flask import Flask
 from flask_cors import CORS
-from sqlalchemy import create_engine
 
 from routes.records import records_blueprint
 from routes.dashboard import dashboard_blueprint
-from models.orms import mapper_registry
+from models.orms import mapper_registry, engine
 
-engine = create_engine('sqlite:///sleep_tracker.db')
 mapper_registry.metadata.create_all(engine)
 
 app = Flask(__name__)

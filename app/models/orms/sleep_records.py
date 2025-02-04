@@ -7,6 +7,7 @@ class PastSleepRecords:
 
 from datetime import datetime
 from typing import Optional
+from dataclasses import dataclass
 
 from sqlalchemy import func
 from sqlalchemy import Integer
@@ -20,6 +21,14 @@ class SleepRecords:
     __tablename__ = 'sleep_records'
 
     id = mapped_column(Integer, primary_key=True)
-    sleep_duration: Mapped[int]
+    duration: Mapped[int]
     start_time: Mapped[datetime] = mapped_column(insert_default=func.now())
     end_time: Mapped[Optional[datetime]]
+
+    def as_json(self):
+        return {
+            'id': self.id,
+            'start_time': self.end_time.isoformat(), 
+            'end_time': self.end_time.isoformat(),
+            'duration': self.duration
+        }

@@ -26,3 +26,13 @@ class ActiveSleepRecords
 x = PastSleepRecords(sleep_duration=6, .....)
 x.insert()
 x.delete()
+
+
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"start_time":"2011-11-04T00:05:23","end_time":"2011-11-04T00:09:23"}' \
+  http://192.168.86.65:8080/api/records
+
+  curl \
+  --request GET \
+  http://192.168.86.65:8080/api/records
