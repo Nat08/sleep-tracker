@@ -36,3 +36,10 @@ curl --header "Content-Type: application/json" \
   curl \
   --request GET \
   http://192.168.86.65:8080/api/records
+
+  curl   --request DELETE   http://192.168.86.65:8080/api/records/1
+
+  curl --header "Content-Type: application/json" \
+  --request PUT \
+  --data '{"start_time":"2011-11-03T00:05:23"}' \
+  http://192.168.86.65:8080/api/records

@@ -28,7 +28,7 @@ class SleepRecords:
     def as_json(self):
         return {
             'id': self.id,
-            'start_time': self.end_time.isoformat(), 
+            'start_time': self.start_time.isoformat(), 
             'end_time': self.end_time.isoformat(),
             'duration': self.duration
         }

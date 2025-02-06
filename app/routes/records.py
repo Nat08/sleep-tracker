@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, delete
 
 from models.orms import engine
 from models.orms import ActiveSleepRecords, SleepRecords
@@ -24,11 +24,18 @@ def get_records():
             'data': records
         })
 
-@records_blueprint.route('/records', methods=['DELETE'])
+@records_blueprint.route('/records/<int:sleep_id>', methods=['DELETE'])
 @cross_origin()
-def delete_record():
-    pass
+def delete_record(sleep_id):
+    with Session(engine) as session:
+        statement = delete(SleepRecords).where(SleepRecords.id==sleep_id)
+        session.execute(statement)
+        session.commit()
 
+        return jsonify({
+            'status' : 'success'
+        })
+    
 @records_blueprint.route('/records', methods=['POST'])
 @cross_origin()
 def add_record():
@@ -48,9 +55,30 @@ def add_record():
 
         })
 
-@records_blueprint.route('/records', methods=['PUT'])
+@records_blueprint.route('/records/<int:sleep_id>', methods=['PUT'])
 @cross_origin()
-def update_record():
-    pass
+def update_record(sleep_id):
+    raw_new_sleep_record = request.json
 
+    with Session(engine) as session:
+        statement = select(SleepRecords).where(SleepRecords.id==sleep_id)
+        sleep_record = session.scalars(statement).one()
+        
+        if 'start_time' in raw_new_sleep_record.keys():
+            start_time = datetime.fromisoformat(raw_new_sleep_record['start_time'])
+            sleep_record.start_time = start_time
+        
+        if 'end_time' in raw_new_sleep_record.keys():
+            end_time = datetime.fromisoformat(raw_new_sleep_record['end_time'])
+            sleep_record.end_time = end_time
 
+        session.commit()
+
+        print(sleep_record.start_time)
+            
+        return jsonify({
+            'status' : 'success',
+            'data': sleep_record.as_json()
+
+        })
+    
