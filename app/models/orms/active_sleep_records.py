@@ -20,3 +20,9 @@ class ActiveSleepRecords:
 
     id = mapped_column(Integer, primary_key=True)
     sleep_id: Mapped[int] = mapped_column(ForeignKey('sleep_records.id'))
+
+    def as_json(self):
+        return {
+            'id': self.id,
+            'sleep_id': self.sleep_id, 
+        }

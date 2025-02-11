@@ -73,12 +73,9 @@ def update_record(sleep_id):
             sleep_record.end_time = end_time
 
         session.commit()
-
-        print(sleep_record.start_time)
             
         return jsonify({
             'status' : 'success',
             'data': sleep_record.as_json()
-
         })
     
