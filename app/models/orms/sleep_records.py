@@ -7,7 +7,6 @@ class PastSleepRecords:
 
 from datetime import datetime
 from typing import Optional
-from dataclasses import dataclass
 
 from sqlalchemy import func
 from sqlalchemy import Integer

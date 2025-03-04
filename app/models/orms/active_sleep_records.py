@@ -2,11 +2,6 @@
 class ActiveSleepRecords
     start_time: date
 """
-
-from datetime import datetime
-from typing import Optional
-
-
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy.orm import mapped_column

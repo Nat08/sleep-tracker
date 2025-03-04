@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, delete
 
 from models.orms import engine
-from models.orms import ActiveSleepRecords, SleepRecords
+from models.orms import SleepRecords
 
 records_blueprint = Blueprint('records', __name__)
 

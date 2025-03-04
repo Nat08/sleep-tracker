@@ -50,12 +50,12 @@ curl --header "Content-Type: application/json" \
 
   curl --header "Content-Type: application/json" \
   --request POST \
-  --data '{"start_time":"2011-11-03T00:05:23"}' \
+  --data '{"start_time":"2011-11-03T01:05:23"}' \
   http://192.168.86.65:8080/api/active-records
 
   curl --header "Content-Type: application/json" \
   --request POST \
-  --data '{"end_time":"2011-11-03T00:06:23"}' \
+  --data '{"end_time":"2011-11-03T02:06:23"}' \
   http://192.168.86.65:8080/api/active-records/1/stop
 
 
