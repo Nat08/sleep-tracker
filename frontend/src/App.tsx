@@ -2,32 +2,30 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import Alert from '@mui/material/Alert';
+import { Box, Button, Paper, Stack } from '@mui/material';
+import TimerIcon from '@mui/icons-material/Timer';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Paper elevation={3} className='app-frame'>
+        <Stack>
+          <Box height={'20%'} width={'100%'}>
+            <Stack direction='row-reverse' >
+              <Button>
+                <TimerIcon/>
+              </Button>
+              <Button>
+                <EqualizerIcon/>
+              </Button>
+            </Stack>
+          </Box>
+          <Box bgcolor={'blue'} sx={{height: '100%', width: '100%'}}>
+          </Box>
+        </Stack>
+      </Paper>
     </>
   )
 }

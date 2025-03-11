@@ -30,6 +30,7 @@ body {
   min-height: 100vh;
 }
 
+/*
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -45,7 +46,14 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+}*/
+
+.app-frame {
+  width: 60vw;
+  height: 70vh;
 }
+
+/*
 button:hover {
   border-color: #646cff;
 }
@@ -53,6 +61,7 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+*/
 
 @media (prefers-color-scheme: light) {
   :root {
