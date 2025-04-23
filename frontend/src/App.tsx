@@ -15,25 +15,121 @@ function App() {
   const [endTime, setEndTime] = useState(new Date(startTime));
   const [duration, setDuration] = useState(0);
   const [stopWatchId, setStopWatchId] = useState(0);
+  const [activeSleepId, setActiveSleepId] = useState(-1);
+  const [sleepId, setSleepId] = useState(-1);
 
+  // retrieve the active/sleep ids
   useEffect(() => {
-    if (!isActiveSession) {
-      clearInterval(stopWatchId);
+    fetch('http://127.0.0.1:8080/api/active-records', {method: 'GET'}).then(
+      async (resp) => {
+        if (!resp.ok) {
+          alert('Unable to conenct to the backend.')
+          return;
+        }
+
+        const contents = await resp.json()
+        if (contents.data.length == 0) {
+          return;
+        }
+        
+        const {id, sleep_id} = contents.data[0] // {id: xxx, sleep_id: xxx}
+        setSleepId(id);
+        setActiveSleepId(sleep_id)
+      }
+    )
+  }, [])
+
+  // retrieve start time if an active record exists
+  useEffect(() => {
+    if (sleepId == -1) {
       return;
     }
-    
-    const currentTime = new Date();
-    setStartTime(currentTime);
-    setEndTime(currentTime);
 
-    const intervalId = setInterval(() => {
-      setEndTime(endTime => {
-        const currentTime = endTime.getTime();
-        return new Date(currentTime + 1000)
-      })
-    }, 1000);
 
-    setStopWatchId(intervalId);
+    fetch(`http://127.0.0.1:8080/api/records/${sleepId}`, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+      }
+    }).then(
+      async (resp) => {
+        if (!resp.ok) {
+          alert('Unable to connect to the backend.')
+          return;
+        }
+
+        const contents = await resp.json()
+        
+        const {start_time} = contents.data // {id: xxx, sleep_id: xxx}
+        setStartTime(new Date(start_time))
+      }
+    )
+  }, [sleepId])
+ 
+  useEffect(() => {
+    if (isActiveSession) {
+      
+      // reset the timer
+      const currentTime = new Date();
+      setStartTime(currentTime);
+      setEndTime(currentTime);
+      
+      const intervalId = setInterval(() => {
+        setEndTime(endTime => {
+          const currentTime = endTime.getTime();
+          return new Date(currentTime + 1000)
+        })
+      }, 1000);
+  
+      setStopWatchId(intervalId);
+
+      fetch('http://127.0.0.1:8080/api/active-records', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({start_time: startTime.toISOString().slice(0, -5)})
+      }).then(
+        async (resp) => {
+          if (!resp.ok) {
+            alert('Unable to conenct to the backend.')
+            return;
+          }
+          
+          const contents = await resp.json()
+          
+          const {id, sleep_id} = contents.data // {id: xxx, sleep_id: xxx}
+          setSleepId(id);
+          setActiveSleepId(sleep_id)
+        }
+      )
+    } else {
+      if (activeSleepId == -1) {
+        return;
+      }
+
+      clearInterval(stopWatchId);
+
+      fetch(`http://127.0.0.1:8080/api/active-records/${activeSleepId}/stop`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({end_time: endTime.toISOString().slice(0, -5)})
+        }).then(
+        async (resp) => {
+          if (!resp.ok) {
+            alert('Unable to conenct to the backend.')
+            return;
+          }
+  
+          const contents = await resp.json()
+          
+          const {end_time} = contents.data // {id: xxx, sleep_id: xxx}
+          setEndTime(end_time)
+        }
+      )
+    }
   }, [isActiveSession])
 
   useEffect(() => {

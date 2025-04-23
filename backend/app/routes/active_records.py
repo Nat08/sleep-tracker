@@ -52,7 +52,7 @@ def add_record():
         session.commit()
 
         active_sleep_record.sleep_id = sleep_record.id
-
+        
         session.add(active_sleep_record)
         session.commit()
 

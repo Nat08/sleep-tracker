@@ -16,5 +16,5 @@ app.register_blueprint(active_records_blueprint, url_prefix='/api')
 app.register_blueprint(dashboard_blueprint, url_prefix='/')
 
 if __name__ == "__main__":
-    app.run('0.0.0.0', port=8080)
+    app.run('0.0.0.0', port=8080, debug=True)
 
