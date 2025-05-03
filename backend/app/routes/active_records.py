@@ -70,10 +70,23 @@ def stop_active_sleep_session(sleep_id):
 
     with Session(engine) as session:
         select_active_sleep_record_statement = select(ActiveSleepRecords).where(ActiveSleepRecords.id==sleep_id)
-        active_sleep_record = session.scalars(select_active_sleep_record_statement).one()
+        active_sleep_record = session.scalars(select_active_sleep_record_statement).one_or_none()
         
+        if not active_sleep_record:
+            return jsonify({
+                'status' : 'failed',
+                'data': None
+            })
+
         select_sleep_record_statement = select(SleepRecords).where(SleepRecords.id==active_sleep_record.sleep_id)
-        sleep_record = session.scalars(select_sleep_record_statement).one()
+        sleep_record = session.scalars(select_sleep_record_statement).one_or_none()
+        if not sleep_record:
+            return jsonify({
+                'status' : 'failed',
+                'data': None
+            })
+
+
         sleep_record.end_time = end_time
         duration = end_time - sleep_record.start_time
         sleep_record.duration = int(duration.total_seconds())

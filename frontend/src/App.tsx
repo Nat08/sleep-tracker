@@ -17,6 +17,7 @@ function App() {
   const [stopWatchId, setStopWatchId] = useState(0);
   const [activeSleepId, setActiveSleepId] = useState(-1);
   const [sleepId, setSleepId] = useState(-1);
+  const [offset, setOffset] = useState(new Date().getTimezoneOffset() * 60000);
 
   // retrieve the active/sleep ids
   useEffect(() => {
@@ -33,8 +34,8 @@ function App() {
         }
         
         const {id, sleep_id} = contents.data[0] // {id: xxx, sleep_id: xxx}
-        setSleepId(id);
-        setActiveSleepId(sleep_id)
+        setSleepId(sleep_id);
+        setActiveSleepId(id)
       }
     )
   }, [])
@@ -44,7 +45,6 @@ function App() {
     if (sleepId == -1) {
       return;
     }
-
 
     fetch(`http://127.0.0.1:8080/api/records/${sleepId}`, {
       method: 'GET',
@@ -61,7 +61,10 @@ function App() {
         const contents = await resp.json()
         
         const {start_time} = contents.data // {id: xxx, sleep_id: xxx}
-        setStartTime(new Date(start_time))
+        const start_time_local = new Date(start_time);
+
+        setStartTime(new Date(start_time_local.getTime() - offset))
+        setIsActiveSession(true);
       }
     )
   }, [sleepId])
@@ -69,11 +72,14 @@ function App() {
   useEffect(() => {
     if (isActiveSession) {
       
-      // reset the timer
       const currentTime = new Date();
-      setStartTime(currentTime);
       setEndTime(currentTime);
-      
+
+      if (sleepId == -1) {
+          // reset the timer
+          setStartTime(currentTime);
+      }
+
       const intervalId = setInterval(() => {
         setEndTime(endTime => {
           const currentTime = endTime.getTime();
@@ -83,26 +89,28 @@ function App() {
   
       setStopWatchId(intervalId);
 
-      fetch('http://127.0.0.1:8080/api/active-records', {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({start_time: startTime.toISOString().slice(0, -5)})
-      }).then(
-        async (resp) => {
-          if (!resp.ok) {
-            alert('Unable to conenct to the backend.')
-            return;
+      if (sleepId == -1) {
+        fetch('http://127.0.0.1:8080/api/active-records', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({start_time: st.toISOString().slice(0, -5)})
+        }).then(
+          async (resp) => {
+            if (!resp.ok) {
+              alert('Unable to conenct to the backend.')
+              return;
+            }
+            
+            const contents = await resp.json()
+            
+            const {id, sleep_id} = contents.data // {id: xxx, sleep_id: xxx}
+            setSleepId(sleep_id);
+            setActiveSleepId(id)
           }
-          
-          const contents = await resp.json()
-          
-          const {id, sleep_id} = contents.data // {id: xxx, sleep_id: xxx}
-          setSleepId(id);
-          setActiveSleepId(sleep_id)
-        }
-      )
+        )
+      }
     } else {
       if (activeSleepId == -1) {
         return;
@@ -124,15 +132,25 @@ function App() {
           }
   
           const contents = await resp.json()
+          if (contents.status == 'failed') {
+            alert(`Unable to find the active sleep record with id ${activeSleepId}`)
+            return;
+          }
           
+
           const {end_time} = contents.data // {id: xxx, sleep_id: xxx}
-          setEndTime(end_time)
+          const end_time_local =  new Date(new Date(end_time).getTime() - offset);
+          setSleepId(-1);
+          setActiveSleepId(-1);
+          
+          setEndTime(end_time_local)
         }
       )
     }
   }, [isActiveSession])
 
   useEffect(() => {
+    console.log(endTime, startTime)
     setDuration(endTime.getTime() - startTime.getTime());
   }, [endTime])
 
@@ -152,7 +170,7 @@ function App() {
           </Box>
           <Box sx={{height: '90%', width: '100%'}}>
             <Stack direction={'column'} alignItems='center' alignContent='center' justifyContent='center' sx={{flex: '1'}} height={'100%'} spacing={10}>
-                <Typography variant='h2'>{prettyMs(duration)}</Typography>
+                <Typography variant='h2'>{prettyMs(duration, {secondsDecimalDigits: 0})}</Typography>
                 <Button variant="contained" size='large' onClick={(_) => {
                     setIsActiveSession(!isActiveSession)
                   }}>

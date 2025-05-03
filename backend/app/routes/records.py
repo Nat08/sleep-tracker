@@ -31,9 +31,15 @@ def get_records_by_sleep_id(sleep_id):
         statement = select(SleepRecords).where(SleepRecords.id==sleep_id)
         record = session.scalars(statement).first()
         
+        if not record:
+            return jsonify({
+                'status' : 'failed',
+                'data': None
+            })
+
         return jsonify({
             'status' : 'success',
-            'data': record
+            'data': record.as_json()
         })
 
 @records_blueprint.route('/records/<int:sleep_id>', methods=['DELETE'])
