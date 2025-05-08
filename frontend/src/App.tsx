@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import SleepTimer from './SleepTimer'
 import Alert from '@mui/material/Alert';
 import { Box, Button, Paper, Stack, Typography } from '@mui/material';
 import TimerIcon from '@mui/icons-material/Timer';
@@ -24,7 +25,7 @@ function App() {
     fetch('http://127.0.0.1:8080/api/active-records', {method: 'GET'}).then(
       async (resp) => {
         if (!resp.ok) {
-          alert('Unable to conenct to the backend.')
+          alert('Unable to connect to the backend.')
           return;
         }
 
@@ -98,7 +99,7 @@ function App() {
         }).then(
           async (resp) => {
             if (!resp.ok) {
-              alert('Unable to conenct to the backend.')
+              alert('Unable to connect to the backend.')
               return;
             }
             
@@ -127,7 +128,7 @@ function App() {
         }).then(
         async (resp) => {
           if (!resp.ok) {
-            alert('Unable to conenct to the backend.')
+            alert('Unable to connect to the backend.')
             return;
           }
   
@@ -157,8 +158,8 @@ function App() {
     <>
       <Paper elevation={2} className='app-frame'>
         <Stack direction={'column'} height={'100%'} sx={{flex: '1'}}>
-          <Box height={'10%'} width={'100%'} sx={{'border-bottom': 'solid 1px black'}}>
-            <Stack direction='row-reverse' >
+          <Box height={'10%'} width={'100%'} sx={{'border-bottom': 'solid 1px black', padding: 0, margin: 0}}>
+            <Stack direction='row-reverse' alignItems='center' height={'100%'}>
               <Button>
                 <TimerIcon sx={{width: '30px', height: '30px'}}/>
               </Button>
@@ -167,15 +168,8 @@ function App() {
               </Button>
             </Stack>
           </Box>
-          <Box sx={{height: '90%', width: '100%'}}>
-            <Stack direction={'column'} alignItems='center' alignContent='center' justifyContent='center' sx={{flex: '1'}} height={'100%'} spacing={10}>
-                <Typography variant='h2'>{prettyMs(duration, {secondsDecimalDigits: 0})}</Typography>
-                <Button variant="contained" size='large' onClick={(_) => {
-                    setIsActiveSession(!isActiveSession)
-                  }}>
-                  {isActiveSession ? 'End' : 'Start'}
-                </Button>
-            </Stack>
+          <Box sx={{height: '90%', width: '100%', padding: 0, margin: 0}}>
+            <SleepTimer></SleepTimer>
           </Box>
         </Stack>
       </Paper>
