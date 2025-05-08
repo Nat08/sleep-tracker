@@ -59,7 +59,6 @@ function App() {
         }
 
         const contents = await resp.json()
-        
         const {start_time} = contents.data // {id: xxx, sleep_id: xxx}
         const start_time_local = new Date(start_time);
 
@@ -95,7 +94,7 @@ function App() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({start_time: st.toISOString().slice(0, -5)})
+          body: JSON.stringify({start_time: currentTime.toISOString().slice(0, -5)})
         }).then(
           async (resp) => {
             if (!resp.ok) {
@@ -112,13 +111,14 @@ function App() {
         )
       }
     } else {
+      // if trying to press stop but not in an active sleep session
       if (activeSleepId == -1) {
         return;
       }
 
       clearInterval(stopWatchId);
 
-      fetch(`http://127.0.0.1:8080/api/active-records/${activeSleepId}/stop`, {
+      fetch(`http://127.0.0.1:8080/api/active-records/${activeSleepId}/end`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
@@ -150,7 +150,6 @@ function App() {
   }, [isActiveSession])
 
   useEffect(() => {
-    console.log(endTime, startTime)
     setDuration(endTime.getTime() - startTime.getTime());
   }, [endTime])
 
@@ -174,7 +173,7 @@ function App() {
                 <Button variant="contained" size='large' onClick={(_) => {
                     setIsActiveSession(!isActiveSession)
                   }}>
-                  {isActiveSession ? 'Stop' : 'Start'}
+                  {isActiveSession ? 'End' : 'Start'}
                 </Button>
             </Stack>
           </Box>

@@ -45,6 +45,15 @@ def add_record():
     start_time = datetime.fromisoformat(raw_sleep_record['start_time'])
 
     with Session(engine) as session:
+        statement = select(ActiveSleepRecords)
+        existing_active_record = session.scalars(statement).one_or_none()
+
+        if existing_active_record:
+            return jsonify({
+                'status' : 'success',
+                'data': existing_active_record.as_json()
+            })
+
         active_sleep_record = ActiveSleepRecords()
         sleep_record = SleepRecords(duration=0, start_time=start_time)
         
@@ -62,9 +71,9 @@ def add_record():
         })
 
 
-@active_records_blueprint.route('/active-records/<int:sleep_id>/stop', methods=['POST'])
+@active_records_blueprint.route('/active-records/<int:sleep_id>/end', methods=['POST'])
 @cross_origin()
-def stop_active_sleep_session(sleep_id):
+def end_active_sleep_session(sleep_id):
     raw_sleep_record = request.json
     end_time = datetime.fromisoformat(raw_sleep_record['end_time'])
 
