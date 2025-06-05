@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import SleepTimer from './SleepTimer'
+import SleepHistory from './SleepHistory'
 import Alert from '@mui/material/Alert';
 import { Box, Button, Paper, Stack, Typography } from '@mui/material';
 import TimerIcon from '@mui/icons-material/Timer';
@@ -11,6 +12,7 @@ import prettyMs from 'pretty-ms';
 
 function App() {
 
+  const [isOnSleepTimerPage, setIsOnSleepTimerPage] = useState(true);
   const [isActiveSession, setIsActiveSession] = useState(false);
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date(startTime));
@@ -160,16 +162,20 @@ function App() {
         <Stack direction={'column'} height={'100%'} sx={{flex: '1'}}>
           <Box height={'10%'} width={'100%'} sx={{'border-bottom': 'solid 1px black', padding: 0, margin: 0}}>
             <Stack direction='row-reverse' alignItems='center' height={'100%'}>
-              <Button>
-                <TimerIcon sx={{width: '30px', height: '30px'}}/>
+              <Button onClick={(_) => {
+                setIsOnSleepTimerPage(false)
+              }}>
+                <EqualizerIcon sx={{width: '30px', height: '30px'}} className={!isOnSleepTimerPage ? 'selected-logo' : ''}/>
               </Button>
-              <Button>
-                <EqualizerIcon sx={{width: '30px', height: '30px'}}/>
+              <Button onClick={(_) => {
+                setIsOnSleepTimerPage(true)
+              }}>
+                <TimerIcon sx={{width: '30px', height: '30px'}} className={isOnSleepTimerPage ? 'selected-logo' : ''}/>
               </Button>
             </Stack>
           </Box>
           <Box sx={{height: '90%', width: '100%', padding: 0, margin: 0}}>
-            <SleepTimer></SleepTimer>
+             { isOnSleepTimerPage ? <SleepTimer></SleepTimer> : <SleepHistory></SleepHistory>}
           </Box>
         </Stack>
       </Paper>

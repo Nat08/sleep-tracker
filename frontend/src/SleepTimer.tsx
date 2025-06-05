@@ -158,7 +158,7 @@ export default function SleepTimer() {
             <Button variant="contained" size='large' onClick={(_) => {
                 setIsActiveSession(!isActiveSession)
             }}>
-            {isActiveSession ? 'End1' : 'Start1'}
+            {isActiveSession ? 'End' : 'Start'}
             </Button>
         </Stack>
     )
