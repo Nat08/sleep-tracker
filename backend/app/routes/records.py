@@ -24,6 +24,24 @@ def get_records():
             'data': records
         })
 
+@records_blueprint.route('/records/<int:sleep_id>', methods=['GET'])
+@cross_origin()
+def get_records_by_sleep_id(sleep_id):
+    with Session(engine) as session:
+        statement = select(SleepRecords).where(SleepRecords.id==sleep_id)
+        record = session.scalars(statement).first()
+        
+        if not record:
+            return jsonify({
+                'status' : 'failed',
+                'data': None
+            })
+
+        return jsonify({
+            'status' : 'success',
+            'data': record.as_json()
+        })
+
 @records_blueprint.route('/records/<int:sleep_id>', methods=['DELETE'])
 @cross_origin()
 def delete_record(sleep_id):

@@ -31,11 +31,11 @@ x.delete()
 curl --header "Content-Type: application/json" \
   --request POST \
   --data '{"start_time":"2011-11-04T00:05:23","end_time":"2011-11-04T00:09:23"}' \
-  http://192.168.86.65:8080/api/records
+  http://127.0.0.1:8080/api/records
 
   curl \
   --request GET \
-  http://192.168.86.65:8080/api/records
+  http://127.0.0.1:8080/api/records'2025-04-23T00:30:42.460Z
 
   curl   --request DELETE   http://192.168.86.65:8080/api/records/1
 
