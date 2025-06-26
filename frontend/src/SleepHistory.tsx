@@ -1,8 +1,9 @@
 import './SleepHistory.css'
 import * as React from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { duration } from '@mui/material';
+import { Button, duration, Stack } from '@mui/material';
 import prettyMs from 'pretty-ms';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 90 },
@@ -31,6 +32,29 @@ const columns: GridColDef[] = [
 export default function SleepHistory () {
     
     const [rows, setRows] = React.useState([]);
+    const [selectedRowIds, setSelectedRowsIds] = React.useState([]);
+    
+    const deleteFromSleepHistory = async (id: number) => {
+        fetch(`http://127.0.0.1:8080/api/records/${id}`, {
+        method: 'DELETE',
+        headers: {
+            "Content-Type": "application/json",
+        }
+        }).then(
+            async (resp) => {
+                if (!resp.ok) {
+                alert('Unable to connect to the backend.')
+                return;
+                }
+            }
+        )
+    }
+
+    const deleteRecords = async(ids: number[]) => {
+        ids.forEach(id => {
+            deleteFromSleepHistory(id)
+        })
+    }
 
     // retrieve start time if an active record exists
     React.useEffect(() => {
@@ -40,16 +64,15 @@ export default function SleepHistory () {
             "Content-Type": "application/json",
         }
         }).then(
-        async (resp) => {
-            if (!resp.ok) {
-            alert('Unable to connect to the backend.')
-            return;
+            async (resp) => {
+                if (!resp.ok) {
+                alert('Unable to connect to the backend.')
+                return;
+                }
+                
+                const contents = await resp.json()
+                setRows(contents.data)
             }
-
-            const contents = await resp.json()
-
-            setRows(contents.data)
-        }
         )
     }, [])
 
@@ -68,7 +91,14 @@ export default function SleepHistory () {
                 pageSizeOptions={[10]}
                 checkboxSelection
                 disableRowSelectionOnClick
+                onRowSelectionModelChange={(rowSelectionModel: any) => {console.log(rowSelectionModel.ids.size); rowSelectionModel.ids.size > 0 ? setSelectedRowsIds(Array.from(rowSelectionModel.ids)) : setSelectedRowsIds([])}}
             />
+
+            {selectedRowIds?.length > 0 && (<Stack direction='row-reverse' alignItems='center'>
+                <Button variant='contained' size='small' startIcon={<DeleteIcon />} sx={{background: "#FF0000", mt: 2}} onClick={(_) => deleteRecords(selectedRowIds)}>
+                    Delete Selected Sleep Records
+                </Button>
+            </Stack>)}
         </>
     )
 }
